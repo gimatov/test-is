@@ -1,0 +1,23 @@
+version: "3.3"
+
+services:
+  asterisk:
+    build: ./asterisk
+    env_file:
+      - .env
+    ports:
+      - "5060:5060/udp"
+      - "10000-10100:10000-10100/udp"
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning --requirepass $REDIS_PASSWORD
+    env_file:
+      - .env
+  app:
+    build: ./app
+    env_file:
+      - .env
+    depends_on:
+      - asterisk
+      - redis
